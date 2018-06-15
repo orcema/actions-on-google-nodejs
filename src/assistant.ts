@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { OmniHandler, StandardHandler, BuiltinFrameworks, builtin } from './framework'
+import { OmniHandler, StandardHandler, BuiltinFrameworks, builtin,StandardResponse } from './framework'
 import * as common from './common'
 
 /** @public */
@@ -80,6 +80,10 @@ export const attach = <TService>(
   app = Object.assign(omni, app)
   const handler: typeof app.handler = app.handler.bind(app)
   const standard: StandardHandler = async (body, headers) => {
+    // pass only valid body data to services actionsSDK, dialogflow, smarthome. Data validity check is based on presence of "body.responseId"
+    if(body.responseId===undefined){
+      return {} as StandardResponse
+    }
     const log = app.debug ? common.info : common.debug
     log('Request', common.stringify(body))
     log('Headers', common.stringify(headers))
